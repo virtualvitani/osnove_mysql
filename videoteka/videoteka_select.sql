@@ -132,20 +132,3 @@ WHERE datediff(p.datum_povrata, p.datum_posudbe) > 1 OR (p.datum_povrata IS NULL
 
 -- dohvati sve iz filmova, preskoci prva dva zapisa, dohvati sveukupno 3 zapisa
 SELECT * from filmovi LIMIT 2 OFFSET 2;
-
--- dohvati prosjecnu cijenu filmova s obzirom na ukupnu zalihu filmova
-SELECT f.naslov, COUNT(k.id) AS 'Broj kopija', ROUND(AVG(c.cijena * m.koeficijent), 2) AS prosjecna_cijena
-    FROM kopija k
-    JOIN filmovi f ON k.film_id = f.id
-    JOIN cjenik c ON c.id = f.cjenik_id
-    JOIN mediji m ON k.medij_id = m.id
-    WHERE k.dostupan = 1
-    GROUP BY f.id;
-
--- Izlistaj posudbe sa clan.ime i film.naziv
-SELECT p.*, c.ime, IFNULL(f.naslov, 'Nije posudio nista') AS posudio
-    FROM posudba p
-    JOIN clanovi c ON c.id = p.clan_id
-    LEFT JOIN posudba_kopija pk ON p.id = pk.posudba_id
-    LEFT JOIN kopija k ON pk.kopija_id = k.id
-    LEFT JOIN filmovi f ON k.film_id = f.id;
