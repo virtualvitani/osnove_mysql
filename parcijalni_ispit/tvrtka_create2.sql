@@ -74,13 +74,13 @@ INSERT INTO Djelatnici_podruznica (ID_djelatnika, ID_podruznice) VALUES
     (14, 8);
 
 -- Prikuplja podatke o svim djelatnicima i njihovim placama
-SELECT CONCAT (Ime_djelatnika, Prezime_djelatnika) AS 'Ime i Prezime', Placa_djelatnika AS 'Placa'
-FROM Djelatnici_podruznica;
+SELECT CONCAT (Ime_djelatnika, ' ', Prezime_djelatnika) AS 'Ime i prezime', Placa_djelatnika AS 'Placa'
+FROM Djelatnik;
 
 -- Prikuplja podatke o voditeljima podruznica i izracunava njihovu prosjecnu placu
-SELECT AVG(p.placa) AS 'Prosjecna placa voditelja'
-FROM djelatnik d
-JOIN podruznica p ON v.voditelj = i.ID_djelatnika;
+SELECT ROUND(SUM(Placa_djelatnika) / COUNT(Voditelj_podruznice),2) AS 'Prosjecna placa'
+FROM Djelatnik
+JOIN Podruznice ON Voditelj_podruznice;
 
 -- Delimiter funkcija koja sluzi za izracun prosjecne place svih djelatnika.
 DELIMITER $$
@@ -95,11 +95,16 @@ END $$
 DELIMITER ;
 
 -- Funkcija koja sluzi za sortiranje djelatnika po podruznicama
-SELECT CONCAT (i.Ime_djelatnika, ' ', p.Prezime_djelatnika) AS d.Djelatnici_podruznica, p.Ime_podruznice AS 'Djelatnik u podruznici'
-FROM Djelatnik d
-JOIN Djelatnici_podruznica dp ON i.ID_podruznice = id.ID_djelatnika
-JOIN Podruznica p ON id.ID_djelatnika = i.ID_podruznice
-GROUP BY Djelatnici_podruznica, ip.Ime_podruznice;
+SELECT CONCAT (Ime_djelatnika, ' ', Prezime_djelatnika) AS Djelatnik, Ime_podruznice AS 'Podruznica'
+FROM Djelatnik
+JOIN Djelatnici_podruznica ON ID_djelatnika = ID_djelatnika
+JOIN Podruznice ON ID_djelatnika = ID_podruznice
+GROUP BY Djelatnik, Ime_podruznice;
+
+-- Funkcija koja sluzi za sortiranje voditelja po podruznicama
+SELECT Voditelj_podruznice AS 'Podruznica', CONCAT (Ime_djelatnika, ' ', Prezime_djelatnika) AS 'Voditelj'
+FROM Podruznice
+JOIN Djelatnik ON Voditelj_podruznice = Voditelj_podruznice
 
 -- Funkcija koja sluzi za sortiranje voditelja po podruznicama
 SELECT ip.Ime_podruzniceAS 'Podruznica', CONCAT (i.Ime_djelatnika, ' ', p.Prezime_djelatnika) AS 'Voditelj podruznice'
